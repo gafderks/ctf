@@ -9,12 +9,7 @@ function createTeam($name) {
         try {
             
             $team = new \Team($name);
-            $transaction = new \MyTransaction($config['startBudget'], new
-            \DateTime("now"),
-                $team);
-            $team->addTransaction($transaction);
             $entityManager->persist($team);
-            $entityManager->persist($transaction);
             $entityManager->flush();
         } catch (Exception $e) {
    var_dump($e->getTrace());}
@@ -23,48 +18,15 @@ function createTeam($name) {
     }
 }
 
-function buyProperty($name, $locationId) {
+function captureLocation($name, $locationId) {
     global $entityManager;
     global $config;
     $team = getTeamByName($name);
     $location = getLocation($locationId);
-    $transaction = new \MyTransaction(-1 * $location->getPrice(), new
-    \DateTime('now'), $team);
-    $team->addTransaction($transaction);
-    $ownership = new \Ownership(new \DateTime("now"), $team, $location);
-    $team->addOwnership($ownership);
+    $capture = new \Capture($location, new \DateTime('now'), $team);
+    $team->addCapture($capture);
     $entityManager->persist($team);
-    $entityManager->persist($transaction);
-    $entityManager->persist($ownership);
-    $entityManager->flush();
-}
-
-function awardBonus($name) {
-    global $entityManager;
-    global $config;
-    $team = getTeamByName($name);
-    $transaction = new \MyTransaction($config['bonusAmount'], new
-    \DateTime('now'), $team);
-    $team->addTransaction($transaction);
-    $entityManager->persist($team);
-    $entityManager->persist($transaction);
-    $entityManager->flush();
-}
-
-function payRent($from, $to, $amount) {
-    global $entityManager;
-    $from = getTeamByName($from);
-    $to = getTeamByName($to);
-    $transactionFrom = new \MyTransaction(-1 * $amount, new
-    \DateTime('now'), $from);
-    $transactionTo = new \MyTransaction($amount, new
-    \DateTime('now'), $to);
-    $from->addTransaction($transactionFrom);
-    $to->addTransaction($transactionTo);
-    $entityManager->persist($from);
-    $entityManager->persist($to);
-    $entityManager->persist($transactionFrom);
-    $entityManager->persist($transactionTo);
+    $entityManager->persist($capture);
     $entityManager->flush();
 }
 
@@ -92,17 +54,6 @@ function getLocations() {
 function getLocation($id) {
     global $entityManager;
     return $entityManager->getRepository('Location')->find($id);
-}
-
-/**
- * @param Team $team
- *
- * @return \MyTransaction[]
- */
-function getTransactionsForTeam(\Team $team) {
-    global $entityManager;
-    return $entityManager->getRepository('MyTransaction')->findBy(['team' =>
-                                                                     $team]);
 }
 
 /**

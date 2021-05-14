@@ -11,18 +11,8 @@ switch ($_GET['action']) {
             case "team":
                 createTeam($_POST['name']);
                 break;
-            case "ownership":
-                buyProperty($_POST['name'], $_POST['location']);
-                break;
-            case "transaction":
-                switch ($_POST['type']) {
-                    case "bonus":
-                        awardBonus($_POST['name']);
-                        break;
-                    case "rent":
-                        payRent($_POST['from'], $_POST['to'], $_POST['amount']);
-                        break;
-                }
+            case "capture":
+                captureLocation($_POST['name'], $_POST['location']);
                 break;
             default:
                 print "Unsupported resource";
@@ -30,14 +20,6 @@ switch ($_GET['action']) {
         break;
     case "list":
         switch ($_GET['resource']) {
-            case "transactions":
-                $transactions = getTransactionsForTeam(getTeamByName($_GET['name']));
-                $result = [];
-                foreach ($transactions as $transaction) {
-                    array_push($result, $transaction->toJSON());
-                }
-                print json_encode($result);
-                break;
             case "locations":
                 $locations = getLocations();
                 $result = [];

@@ -1,6 +1,9 @@
 var transactionInProgress = false;
 var map;
 var selfMarker;
+var markers = [];
+var balloons = [];
+var locations = [];
 
 function initMap() {
   // Gets called from maps js
@@ -13,25 +16,29 @@ function initMap() {
       clickableIcons: false,
       streetViewControl: false,
       fullscreenControl: false,
+      styles: [
+        {
+          featureType: "poi",
+          stylers: [
+            { visibility: "off" }
+          ]   
+        }
+      ]
     });
 
     // Place the markers
-    for (var i = 0; i < locations.length; i++) {
-      marker = new google.maps.Marker({
+    for (let i = 0; i < locations.length; i++) {
+      markers[i] = new google.maps.Marker({
         position: {lat: locations[i].location.lat, lng: locations[i].location.lon},
         map: map,
-        icon: {
-          path: fontawesome.markers.HOME,
-          scale: 0.5,
-          strokeWeight: 0.2,
-          strokeColor: 'black',
-          strokeOpacity: 1,
-          fillColor: locations[i].color,
-          fillOpacity: 0.7,
-          //labelOrigin: google.maps.Point(-3, -12)
-        },
-        //label: locations[i].name
       });
+      
+      balloons[i] = new google.maps.InfoWindow();
+      google.maps.event.addListener(markers[i], 'click', function() {
+        balloons[i].setContent(generateBalloonContent(locations[i]));
+        balloons[i].open(map, markers[i]);
+      });
+    
     }
 
     selfMarker = new google.maps.Marker({
@@ -45,13 +52,36 @@ function initMap() {
         strokeOpacity: 0,
         fillColor: "#006eff",
         fillOpacity: 1,
-        //labelOrigin: google.maps.Point(-3, -12)
       },
-      //label: locations[i].name
     });
 
   });
 
+}
+
+function updateMarkers() {
+  if (markers.length > 0) {
+    if (locations.length !== markers.length) {
+      location.reload(false);
+    }
+    
+    for (let i = 0; i < locations.length; i++) {
+      markers[i].setIcon({
+        path: fontawesome.markers.FLAG,
+        scale: 0.5,
+        strokeWeight: 0.2,
+        strokeColor: 'black',
+        strokeOpacity: 1,
+        fillColor: locations[i].color,
+        fillOpacity: 1,
+        labelOrigin: new google.maps.Point(35.5, -37)
+      });
+      markers[i].setLabel({
+        text: locations[i].score,
+        className: 'markerlabel'
+      });
+    }
+  }
 }
 
 function init() {
@@ -74,8 +104,7 @@ function init() {
 function logIn(callback) {
   if (localStorage.getItem("user") == null) {
     localStorage.setItem("visited", JSON.stringify([]));
-    localStorage.setItem("transactions", JSON.stringify([]));
-    var name = "";
+    let name = "";
     while (name.trim() === "" || name === null) {
       name = prompt("Vul je teamnaam in");
     }
@@ -101,9 +130,7 @@ function bindNavigationButtons() {
 function fetchAll(callback) {
   updateNotifications(function() {
     updateLocations(function() {
-      updateBalance(function() {
-        updateScoreTable(callback);
-      })
+      updateScoreTable(callback);
     })
   });
 }
@@ -125,7 +152,7 @@ function updateLocations(callback) {
   $.get( "api.php?action=list&resource=locations&rand="+Math.random(), function(
     data ) {
     locations = data;
-    updateDestinations();
+    updateMarkers();
     if (typeof callback ==='function') {
       callback();
     }
@@ -145,56 +172,24 @@ function updateNotifications(callback) {
 
 function displayNotifications(notifications) {
   showAlert(null);
-  for (var i = 0; i < notifications.length; i++) {
+  for (let i = 0; i < notifications.length; i++) {
     showAlert(notifications[i]);
   }
-}
-
-function updateDestinations() {
-  $("#destinations").text("");
-  for (var i = 0; i < locations.length; i++) {
-    $("#destinations").append($("<li>" + locations[i].name + "</li>").css
-                                                                      ("color", locations[i].color));
-  }
-}
-
-function updateBalance(callback) {
-  $.get( "api.php?action=list&resource=transactions&rand="+Math.random()+"&name" +
-         "="+localStorage
-         .getItem("user"), function(
-    data ) {
-    var b = 0;
-    for (var i = 0; i < data.length; i++) {
-      b = b + data[i].amount;
-      var transactions = JSON.parse(localStorage.getItem("transactions"));
-      if (transactions.length === 0 || (transactions.indexOf(i) === -1)) {
-        transactions[transactions.length] = i;
-        localStorage.setItem("transactions", JSON.stringify(transactions));
-        if (data[i].amount > 0) {
-          window.alert("WINST: Je hebt €" + data[i].amount + " verdiend.");
-        } else {
-          window.alert("VERLIES: Je hebt €" + -1*data[i].amount + " betaald.");
-        }
-
-      }
-    }
-    $("#balance").text(b);
-    balance = b;
-    if (typeof callback ==='function') {
-      callback();
-    }
-  });
-
 }
 
 function updateScoreTable(callback) {
   $.get( "api.php?action=list&resource=scores&rand="+Math.random(), function(
     data ) {
     $("#score-table").html("");
-    for (var i = 0; i < data.length; i++) {
+    for (let i = 0; i < data.length; i++) {
       $("#score-table").append(
-        "<tr><td>"+data[i].name+"</td><td>"+data[i].ownerships+"</td><td>&euro; "+data[i].balance+"</td><td>&euro; "+data[i].estate+"</td></tr>"
+        "<tr><td>"+data[i].name+"</td><td>"+data[i].captures+"</td><td>"+data[i].total_captures+"</td><td>"+data[i].score+"</td></tr>"
       );
+      if (localStorage.getItem("user") == data[i].name) {
+        $("#team_name").text(data[i].name);
+        $("#team_color").css("color", data[i].color);
+        $(".color-flag").css("fill", data[i].color);
+      }
     }
     if (typeof callback ==='function') {
       callback();
@@ -205,106 +200,55 @@ function updateScoreTable(callback) {
 
 function checkIfNearLocation(location) {
   selfMarker.setPosition({lat: location.coords.latitude, lng: location.coords.longitude});
-  for (var i = 0; i < locations.length; i++) {
-    var distance = getDistanceFromLatLonInKm(
+  for (let i = 0; i < locations.length; i++) {
+    let distance = getDistanceFromLatLonInKm(
       location.coords.latitude,
       location.coords.longitude,
       locations[i].location.lat,
       locations[i].location.lon
     );
-    if (distance <= 0.1) {
-      var visited = JSON.parse(localStorage.getItem("visited"));
+    if (distance <= 0.03) { // 30 meter
+      let visited = JSON.parse(localStorage.getItem("visited"));
       if (visited.length === 0 || (visited[visited.length - 1] !== i)) {
         visited[visited.length] = i;
         localStorage.setItem("visited", JSON.stringify(visited));
-        if (visited.length % 2 === 0) {
-          getBonus(null);
-        }
-        openCard(locations[i], true)
+        visitLocation(locations[i], true)
       }
 
-      openCard(locations[i], false);
+      visitLocation(locations[i], false);
       return;
     }
-    $(".monopoly-card").addClass("d-none");
-    $(".compass").removeClass("d-none");
   }
 }
 
-function buyProperty(locationId) {
+function capture(locationId) {
   $.ajax({
     type: "POST",
-    url: "api.php?action=create&resource=ownership",
+    url: "api.php?action=create&resource=capture",
     data: {'location': locationId, 'name': localStorage.getItem('user')},
   }).done(updateAll(finishTransaction()));
 }
 
-function payRent(teamName, amount, callback) {
-  $.ajax({
-    type: "POST",
-    url: "api.php?action=create&resource=transaction",
-    data: {
-      'type': 'rent',
-      'from': localStorage.getItem('user'),
-      'to': teamName,
-      'amount': amount
-    }
-  }).done(function(callback) { updateAll(callback); });
-}
-
-function getBonus(callback) {
-  $.ajax({
-    type: "POST",
-    url: "api.php?action=create&resource=transaction",
-    data: {'type': 'bonus', 'name': localStorage.getItem('user')}
-  }).done(function(callback) { updateAll(callback); });
-}
-
-function openCard(card, newlyVisited) {
-  $(".monopoly-card").removeClass("d-none");
-  $(".compass").addClass("d-none");
-
-  $("#m-name").text(card.name);
-  $("#m-name").css("background", card.color);
-  $("#m-name").css("color", card.text);
-  $("#m-image").attr("src", "img/"+card.image);
-  $("#m-price").text(card.price);
-  $("#m-rent").text(card.rent);
-
-  $(".ownership").addClass("d-none");
-  $(".ownership").removeClass("d-block");
-  if (card.owner === null) {
-    if (balance < card.price) {
-      $("#buy-button-disabled").addClass("d-block");
-    } else {
-      $("#buy-button").addClass("d-block");
-      $("#buy-button").prop("disabled", false);
-      $("#buy-button").unbind();
-      $("#buy-button").click(function() {
-        $("#buy-button").prop("disabled", true);
-        buyProperty(card.id);
-      });
-    }
-  } else {
-    $("#owner").text(card.owner);
-    $("#buy-unavailable").addClass("d-block");
-    if (localStorage.getItem("user") !== card.owner && newlyVisited) {
-      payRent(card.owner, card.rent, null);
-    }
+function visitLocation(locationDetails, newlyVisited) {
+  if (localStorage.getItem("user") !== locationDetails.owner && newlyVisited) {
+    capture(locationDetails.id);
+    $("#modal-location-name").text(locationDetails.name);
+    $("#modal-location-score").text(locationDetails.score);
+    $("#captureModal").modal("show");
   }
 }
 
 function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
-  var R = 6371; // Radius of the earth in km
-  var dLat = deg2rad(lat2-lat1);  // deg2rad below
-  var dLon = deg2rad(lon2-lon1);
-  var a =
+  let R = 6371; // Radius of the earth in km
+  let dLat = deg2rad(lat2-lat1);  // deg2rad below
+  let dLon = deg2rad(lon2-lon1);
+  let a =
     Math.sin(dLat/2) * Math.sin(dLat/2) +
     Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
     Math.sin(dLon/2) * Math.sin(dLon/2)
   ;
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  var d = R * c; // Distance in km
+  let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  let d = R * c; // Distance in km
   return d;
 }
 
@@ -327,4 +271,26 @@ function startTransaction() {
 
 function finishTransaction() {
   transactionInProgress = false;
+}
+
+function generateBalloonContent(location) {
+  name = "<h6>" + location.name + "</h6>"
+  score = "<strong>Waarde: " + location.score + "</strong><br>";
+  list = [];
+  for (let i = location.captures.length - 1; i >= 0 ; i--) {
+    let capture = location.captures[i];
+    console.log(capture);
+    let team = capture.team;
+    if (i === location.captures.length - 1) {
+      team = "<strong>" + team + "</strong>";
+    }
+    list += "<li style='color: " + capture.color + "'>" + team + " (" + new Date(capture.timestamp * 1000).toLocaleTimeString() + ")</li>";
+  }
+  if (list.length > 0) {
+    heading = "<strong>Bezoekers:</strong>";
+  } else {
+    heading = "";
+  }
+
+  return name + score + heading + "<ul>"+ list + "</ul>";
 }

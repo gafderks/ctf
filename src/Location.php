@@ -24,41 +24,18 @@ class Location
     protected $name;
     
     /**
-     * @OneToMany(targetEntity="Ownership", mappedBy="location")
-     * @var \Ownership[]
+     * @OneToMany(targetEntity="Capture", mappedBy="location")
+     * @OrderBy({"timestamp" = "ASC"})
+     * @var \Capture[]
      */
-    private $ownerships;
-    
-    /**
-     * @var string
-     * @Column(type="string")
-     */
-    private $color;
-    
-    /**
-     * @var string
-     * @Column(type="string")
-     */
-    private $text;
-    
-    /**
-     * @var string
-     * @Column(type="string")
-     */
-    private $image;
+    private $captures;
     
     /**
      * @var double
      * @Column(type="decimal")
      */
-    private $price;
-    
-    /**
-     * @var double
-     * @Column(type="decimal")
-     */
-    private $rent;
-    
+    private $score;
+
     /**
      * @var double
      * @Column(type="string")
@@ -81,26 +58,14 @@ class Location
         return $this->id;
     }
     
-    public function getOwnerships() {
-        return $this->ownerships;
+    public function getCaptures() {
+        return $this->captures;
     }
     
     public function getName() {
         return utf8_encode($this->name);
     }
-    
-    public function getImage() {
-        return utf8_encode($this->image);
-    }
-    
-    public function getColor() {
-        return utf8_encode($this->color);
-    }
-    
-    public function getText() {
-        return utf8_encode($this->text);
-    }
-    
+
     public function getLat() {
         return utf8_encode($this->lat);
     }
@@ -108,47 +73,60 @@ class Location
     public function getLon() {
         return utf8_encode($this->lon);
     }
-    
-    public function getPrice() {
-        return (double) $this->price;
+
+    public function getScore() {
+        return $this->score;
+    }
+
+    public function getColor() {
+        $activeCapture = $this->getActiveCapture();
+        if ($activeCapture != null) {
+            return $activeCapture->getTeam()->getColor();
+        }
+        return 'white';
+    }
+
+    public function getActiveCapture() {
+        if (!$this->captures->isEmpty()) {
+            return $this->captures->last();
+        }
+        return null;
     }
     
-    public function getRent() {
-        return $this->rent;
-    }
-    
-    public function getActiveOwnershipTeamName() {
-        foreach ($this->ownerships as $ownership) {
-            if ($ownership->isActive()) {
-                return $ownership->getTeam()->getTeamName();
-            }
+    public function getActiveCaptureTeamName() {
+        $activeCapture = $this->getActiveCapture();
+        if ($activeCapture != null) {
+            return $activeCapture->getTeam()->getTeamName();
         }
         return null;
     }
     
     public function toJSON() {
+        $the_captures_json = [];
+        foreach ($this->captures as $capture) {
+            array_push($the_captures_json, $capture->toJSON());
+        }
+       
         return [
             "id" => $this->id,
             "name" => $this->getName(),
-            "image" => $this->getImage(),
-            "color" => $this->getColor(),
-            "text" => $this->getText(),
-            "price" => (double) $this->price,
-            "rent" => (double) $this->rent,
+            "score" => $this->getScore(),
             "location" => [
                 "lat" => (double) $this->getLat(),
                 "lon" => (double) $this->getLon()
             ],
-            "owner" => $this->getActiveOwnershipTeamName()
+            "captures" => $the_captures_json,
+            "owner" => $this->getActiveCaptureTeamName(),
+            "color" => $this->getColor()
         ];
     }
     
     public function __construct() {
-        $this->ownerships = new ArrayCollection();
+        $this->captures = new ArrayCollection();
     }
     
-    public function addOwnership(\Ownership $ownership) {
-        $this->ownerships->add($ownership);
+    public function addCapture(\Capture $capture) {
+        $this->captures->add($capture);
     }
     
 }

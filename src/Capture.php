@@ -1,12 +1,12 @@
 <?php
-// src/Transaction.php
+// src/Capture.php
 
 /**
- * Class MyTransaction
+ * Class Capture
  *
  * @Entity
  */
-class MyTransaction
+class Capture
 {
     /**
      * @Id
@@ -27,17 +27,13 @@ class MyTransaction
     protected $timestamp;
     
     /**
-     * @var double
-     * @Column(type="decimal")
+     * Many Captures have One Location.
+     * @ManyToOne(targetEntity="Location", inversedBy="captures")
      */
-    protected $amount;
+    protected $location;
     
     public function getId() {
         return $this->id;
-    }
-    
-    public function getAmount() {
-        return (double) $this->amount;
     }
     
     public function getTimestamp() {
@@ -47,16 +43,25 @@ class MyTransaction
     public function getTeam() {
         return $this->team;
     }
+
+    public function getLocation() {
+        return $this->location;
+    }
+
+    public function isActive() {
+        return $this->getLocation()->getActiveCapture()->getId() == $this->getId();
+    }
     
     public function toJSON() {
         return [
             "timestamp" => $this->getTimestamp()->getTimestamp(),
-            "amount" => (double) $this->getAmount(),
+            "team" => $this->getTeam()->getTeamName(),
+            "color" => $this->getTeam()->getColor(),
         ];
     }
     
-    public function __construct($amount, \DateTime $time, \Team $team) {
-        $this->amount = $amount;
+    public function __construct(\Location $location, \DateTime $time, \Team $team) {
+        $this->location = $location;
         $this->timestamp = $time;
         $this->team = $team;
     }

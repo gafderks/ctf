@@ -25,64 +25,66 @@ class Team
     
     /**
      * One Product has Many Features.
-     * @OneToMany(targetEntity="Ownership", mappedBy="team")
-     * @var \Ownership
+     * @OneToMany(targetEntity="Capture", mappedBy="team")
+     * @var \Capture
      */
-    protected $ownerships;
-    
-    /**
-     * One Product has Many Features.
-     * @OneToMany(targetEntity="MyTransaction", mappedBy="team")
-     * @var \MyTransaction
-     */
-    private $transactions;
+    private $captures;
     
     public function getId() {
         return $this->id;
     }
     
-    public function getTransactions() {
-        return $this->transactions;
-    }
-    
     public function getTeamName() {
         return $this->teamName;
+    }
+
+    public function getColor() {
+        // https://medialab.github.io/iwanthue/
+        $COLORS = [
+            "#4facd8",
+            "#d6602f",
+            "#7861d0",
+            "#79b63d",
+            "#c157b9",
+            "#82b76c",
+            "#d94174",
+            "#4fbe9f",
+            "#9d4a6d",
+            "#3a8147",
+            "#db88b6",
+            "#cea147",
+            "#757dc6",
+            "#7d752f",
+            "#c1624f"
+        ];
+        return $COLORS[$this->getId() % count($COLORS)];
     }
     
     public function __construct($teamName) {
         $this->teamName = $teamName;
-        $this->transactions = new ArrayCollection();
-        $this->ownerships = new ArrayCollection();
+        $this->captures = new ArrayCollection();
     }
     
-    public function addTransaction(\MyTransaction $transaction) {
-        $this->transactions->add($transaction);
-    }
-    
-    public function addOwnership(\Ownership $ownership) {
-        $this->ownerships->add($ownership);
+    public function addCapture(\Capture $capture) {
+        $this->captures->add($capture);
     }
     
     public function getScore() {
-        $numOwnerships = 0;
-        $estate = 0;
-        foreach($this->ownerships as $ownership) {
-            if ($ownership->isActive()) {
-                $numOwnerships++;
-                $estate += $ownership->getLocation()->getPrice();
+        $num_captures = 0;
+        $score = 0;
+        foreach($this->captures as $capture) {
+            if ($capture->isActive()) {
+                $num_captures++;
+                $score += $capture->getLocation()->getScore();
             }
-        }
-        
-        $balance = 0;
-        foreach ($this->transactions as $transaction) {
-            $balance += $transaction->getAmount();
         }
         
         return [
             "name" => $this->getTeamName(),
-            "ownerships" => $numOwnerships,
-            "balance" => $balance,
-            "estate" => $estate,
+            "color" => $this->getColor(),
+            "captures" => $num_captures,
+            "total_captures" => count($this->captures),
+            "score" => $score
         ];
     }
     
