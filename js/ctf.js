@@ -4,6 +4,8 @@ var selfMarker;
 var markers = [];
 var balloons = [];
 var locations = [];
+var activeBalloon;
+
 const weekday = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'];
 
 function initMap() {
@@ -37,7 +39,9 @@ function initMap() {
       balloons[i] = new google.maps.InfoWindow();
       google.maps.event.addListener(markers[i], 'click', function() {
         balloons[i].setContent(generateBalloonContent(locations[i]));
+        if (activeBalloon) { activeBalloon.close(); }
         balloons[i].open(map, markers[i]);
+        activeBalloon = balloons[i];
       });
     
     }
