@@ -4,6 +4,7 @@ var selfMarker;
 var markers = [];
 var balloons = [];
 var locations = [];
+const weekday = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'];
 
 function initMap() {
   // Gets called from maps js
@@ -62,7 +63,7 @@ function initMap() {
 function updateMarkers() {
   if (markers.length > 0) {
     if (locations.length !== markers.length) {
-      location.reload(false);
+      location.reload();
     }
     
     for (let i = 0; i < locations.length; i++) {
@@ -274,9 +275,9 @@ function finishTransaction() {
 }
 
 function generateBalloonContent(location) {
-  name = "<h6>" + location.name + "</h6>"
-  score = "<strong>Waarde: " + location.score + "</strong><br>";
-  list = [];
+  const name = "<h6>" + location.name + "</h6>"
+  const score = "<strong>Waarde: " + location.score + "</strong><br>";
+  let list = [];
   for (let i = location.captures.length - 1; i >= 0 ; i--) {
     let capture = location.captures[i];
     console.log(capture);
@@ -284,7 +285,10 @@ function generateBalloonContent(location) {
     if (i === location.captures.length - 1) {
       team = "<strong>" + team + "</strong>";
     }
-    list += "<li style='color: " + capture.color + "'>" + team + " (" + new Date(capture.timestamp * 1000).toLocaleTimeString() + ")</li>";
+    const timestamp = new Date(capture.timestamp * 1000)
+    const day = weekday[timestamp.getDay()];
+    const time = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    list += `<li style="color: ${capture.color}">${team} (${day} ${time})</li>`;
   }
   if (list.length > 0) {
     heading = "<strong>Bezoekers:</strong>";
