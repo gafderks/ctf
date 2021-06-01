@@ -49,7 +49,3 @@ h1 {
 #score-table td {
   text-align: center;
 }
-
-#score-table td:last-of-type {
-  font-weight: bold;
-}

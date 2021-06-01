@@ -93,6 +93,7 @@ function init() {
   bindNavigationButtons();
   logIn();
   updateAll(null);
+  $('[data-toggle="tooltip"]').tooltip();
   console.log("initialized");
   setInterval(function(){
     if (!transactionInProgress) {
@@ -193,7 +194,7 @@ function updateScoreTable(callback) {
           <td class="text-left"><i class="icon-sign-blank" style="color: ${data[i].color}"></i>&nbsp;${data[i].name}</td>
           <td>${data[i].captures}</td>
           <td>${data[i].total_captures}</td>
-          <td>${data[i].score}</td>
+          <td class="font-weight-bold">${data[i].score}</td>
         </tr>`
       );
       if (localStorage.getItem("user") == data[i].name) {

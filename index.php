@@ -71,7 +71,7 @@ include_once('controller.php');
 <nav class="navbar navbar-expand-xs navbar-light bg-light">
   <a class="navbar-brand" href="#">Vlaggenroof</a>
 
-  <div class="ml-auto mr-3">
+  <div class="ml-auto mr-3" data-toggle="tooltip" data-placement="bottom" title="Je teamkleur en -naam">
     <i id="team_color" class="icon-flag"></i>
     <span id="team_name"></span>
   </div>
@@ -106,11 +106,11 @@ include_once('controller.php');
   <table class="table table-responsive">
     <thead>
     <tr>
-      <th>#</th>
+      <th data-toggle="tooltip" data-placement="top" title="Positie">#</th>
       <th>Team</th>
-      <th><i title="Vlaggen" class="icon-flag"></i></th>
-      <th><i title="Veroveringen" class="icon-flag-alt"></i></th>
-      <th><i title="Score" class="icon-trophy"></i></th>
+      <th data-toggle="tooltip" data-placement="top" title="Vlaggen in bezit"><i class="icon-flag"></i></th>
+      <th data-toggle="tooltip" data-placement="top" title="Veroveringen"><i class="icon-flag-alt"></i></th>
+      <th data-toggle="tooltip" data-placement="top" title="Score"><i class="icon-trophy"></i></th>
     </tr>
     </thead>
     <tbody id="score-table">
@@ -125,6 +125,7 @@ include_once('controller.php');
 
 <!-- Optional JavaScript -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
 <script src="js/ctf.js?<?= rand(); ?>" type="application/javascript"></script>
 <script src="js/fontawesome-markers.min.js"
