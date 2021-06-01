@@ -188,7 +188,12 @@ function updateScoreTable(callback) {
     $("#score-table").html("");
     for (let i = 0; i < data.length; i++) {
       $("#score-table").append(
-        "<tr><td>"+data[i].name+"</td><td>"+data[i].captures+"</td><td>"+data[i].total_captures+"</td><td>"+data[i].score+"</td></tr>"
+        `<tr>
+          <td><i class="icon-sign-blank" style="color: ${data[i].color}"></i>&nbsp;${data[i].name}</td>
+          <td>${data[i].captures}</td>
+          <td>${data[i].total_captures}</td>
+          <td>${data[i].score}</td>
+        </tr>`
       );
       if (localStorage.getItem("user") == data[i].name) {
         $("#team_name").text(data[i].name);
