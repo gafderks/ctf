@@ -34,6 +34,9 @@ switch ($_GET['action']) {
                 foreach ($teams as $team) {
                     array_push($result, $team->getScore());
                 }
+                usort($result, function($a, $b) {
+                    return $a['score'] < $b['score'];
+                });
                 print json_encode($result);
                 break;
             case "notifications":

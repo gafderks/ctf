@@ -189,7 +189,8 @@ function updateScoreTable(callback) {
     for (let i = 0; i < data.length; i++) {
       $("#score-table").append(
         `<tr>
-          <td><i class="icon-sign-blank" style="color: ${data[i].color}"></i>&nbsp;${data[i].name}</td>
+          <td class="text-right">${i+1}.</td>
+          <td class="text-left"><i class="icon-sign-blank" style="color: ${data[i].color}"></i>&nbsp;${data[i].name}</td>
           <td>${data[i].captures}</td>
           <td>${data[i].total_captures}</td>
           <td>${data[i].score}</td>

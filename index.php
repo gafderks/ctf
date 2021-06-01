@@ -106,10 +106,11 @@ include_once('controller.php');
   <table class="table table-responsive">
     <thead>
     <tr>
+      <th>#</th>
       <th>Team</th>
-      <th>Vlaggen</th>
-      <th>Veroveringen</th>
-      <th>Score</th>
+      <th><i title="Vlaggen" class="icon-flag"></i></th>
+      <th><i title="Veroveringen" class="icon-flag-alt"></i></th>
+      <th><i title="Score" class="icon-trophy"></i></th>
     </tr>
     </thead>
     <tbody id="score-table">
