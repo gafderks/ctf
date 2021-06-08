@@ -107,7 +107,7 @@ include_once('controller.php');
 
 <div id="page-map" class="page" style="height: 100%">
   <div style="position: absolute; z-index: 6000; top: 10px; right: 10px; opacity: 0.8;">
-    <div id="clock">
+    <div id="clock" class="shadow">
         <div id="dot"></div>
         <div id="hour"></div>
         <div id="min"></div>
@@ -117,17 +117,17 @@ include_once('controller.php');
   </div>
 
   <div class="d-flex" style="position: absolute; z-index: 6000; bottom: 10px; width: calc(100% - 130px); opacity: 0.8; margin: 50px; margin-right: 80px; margin-bottom: 30px;">
-  <button type="button" class="btn btn-primary mr-3" id="togglePlay"><i class="icon-play"></i></button>
+  <button type="button" class="btn btn-primary mr-3 shadow" id="togglePlay"><i class="icon-play"></i></button>
     <input style="flex-grow: 1;" type="range" id="timelapse_range" min="0" step="10" value="0">
   </div>
 
   <div id="map"></div>
 
-  <table class="table table-sm" style="position: absolute; z-index: 6000; top: 80px; left: 10px;
+  <table class="table table-sm shadow" style="position: absolute; z-index: 6000; top: 80px; left: 10px;
   background: rgba(255, 255, 255, 0.8); width: 300px;">
     <thead>
     <tr>
-      <th data-toggle="tooltip" data-placement="top" title="Positie">#</th>
+      <th style="text-align: right;" data-toggle="tooltip" data-placement="top" title="Positie">#</th>
       <th>Team</th>
       <th data-toggle="tooltip" data-placement="top" title="Vlaggen in bezit"><i class="icon-flag"></i></th>
       <th data-toggle="tooltip" data-placement="top" title="Veroveringen"><i class="icon-flag-alt"></i></th>
