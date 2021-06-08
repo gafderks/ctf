@@ -59,7 +59,6 @@ function initMap() {
 }
 
 function updateMarkers(filteredLocations) {
-    console.log(markers.length);
     if (markers.length > 0) {
         if (filteredLocations.length !== markers.length) {
             location.reload();
@@ -92,7 +91,7 @@ const filterLocations = (locations, begin, end) => {
             return capture.timestamp >= begin && capture.timestamp <= end
         }).sort((a, b) => b.timestamp - a.timestamp);
         if (filteredLocations[i].captures.length > 0) {
-            filteredLocations[i].color = filteredLocations[i].captures[filteredLocations[i].captures.length - 1].color;
+            filteredLocations[i].color = filteredLocations[i].captures[0].color;
         } else {
             filteredLocations[i].color = '#fff';
         }
@@ -187,7 +186,6 @@ function updateScoreTable(filteredLocations) {
                     capture: location.captures[0]
                 }
             }).filter(loc => loc.capture !== undefined).filter(loc => loc.capture.team === team).map(loc => parseInt(loc.score)).reduce((a, b) => a + b, 0),
-            //score: filteredLocations.filter(location => location.owner === team).map(location => parseInt(location.score)).reduce((a, b) => a + b, 0),
             color: captures.filter(capture => capture.team === team)[0].color,
             name: team
         };
