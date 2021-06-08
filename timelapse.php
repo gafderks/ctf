@@ -14,7 +14,7 @@ include_once('controller.php');
   <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css" />
 
-  <title>Vlaggenroof</title>
+  <title>Vlaggenroof | Timelapse</title>
   <style>
     @media print {
       .collapse {
@@ -106,7 +106,7 @@ include_once('controller.php');
 <body>
 
 <div id="page-map" class="page" style="height: 100%">
-  <div style="position: absolute; z-index: 6000; top: 10px; right: 10px; opacity: 0.8;">
+  <div class="d-none d-lg-block" style="position: absolute; z-index: 6000; top: 10px; right: 10px; opacity: 0.8;">
     <div id="clock" class="shadow">
         <div id="dot"></div>
         <div id="hour"></div>
@@ -123,7 +123,7 @@ include_once('controller.php');
 
   <div id="map"></div>
 
-  <table class="table table-sm shadow" style="position: absolute; z-index: 6000; top: 80px; left: 10px;
+  <table class="table table-sm shadow d-none d-lg-block" style="position: absolute; z-index: 6000; top: 80px; left: 10px;
   background: rgba(255, 255, 255, 0.8); width: 300px;">
     <thead>
     <tr>
