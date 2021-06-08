@@ -157,8 +157,10 @@ include_once('controller.php');
 <script type="application/javascript">  
   init();
 
-  setTimeout(function(){ 
-      $('#togglePlay').trigger('click');
+  setTimeout(function() {
+      if (playingInterval === undefined) {
+        $('#togglePlay').trigger('click');
+      }
    }, 5000);
 </script>
 </body>
