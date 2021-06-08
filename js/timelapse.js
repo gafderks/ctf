@@ -109,19 +109,6 @@ function init() {
         setClock(new Date(GAME_START * 1000));
         setDigitalTime(new Date(GAME_START * 1000));
 
-        // locations.forEach(location => {
-        //     location.captures.forEach(capture => {
-        //         capture.location = location;
-        //     })
-        // });
-
-        //const captures = locations.map(location => location.captures).flat().sort((a, b) => a.timestamp < b.timestamp);
-        //GAME_START = captures[0].timestamp;
-        //GAME_END = captures[captures.length - 1].timestamp;
-
-        console.log(GAME_END - GAME_START);
-
-
         timeControl.setAttribute('max', GAME_END - GAME_START);
 
         timeControl.addEventListener('input', () => {
