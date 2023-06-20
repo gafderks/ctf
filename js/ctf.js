@@ -54,7 +54,21 @@ function initMap() {
           map: map,
         });
       }
-    
+
+      const left = 4.916202;
+      const bottom = 51.23338;
+      const width = 0.0392;
+      const height = 0.01705;
+      const overlay = new google.maps.GroundOverlay("https://vlaggenroof.depivos.nl/img/map.png",
+        {
+          north: bottom + height,
+          south: bottom,
+          east: left + width,
+          west: left,
+        }, { opacity: 0.9 }
+      );
+      overlay.setMap(map);
+
     }
 
     selfMarker = new google.maps.Marker({
