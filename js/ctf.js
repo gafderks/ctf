@@ -12,11 +12,11 @@ const maxDistance = 0.060; // 60 meter
 
 function initMap() {
   // Gets called from maps js
-  updateLocations(function() {
+  updateLocations(function () {
     console.log(locations);
     // Init the map
     map = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: locations[0].location.lat, lng: locations[0].location.lon},
+      center: { lat: locations[0].location.lat, lng: locations[0].location.lon },
       zoom: 15,
       clickableIcons: false,
       streetViewControl: false,
@@ -26,7 +26,7 @@ function initMap() {
           featureType: "poi",
           stylers: [
             { visibility: "off" }
-          ]   
+          ]
         }
       ]
     });
@@ -34,12 +34,12 @@ function initMap() {
     // Place the markers
     for (let i = 0; i < locations.length; i++) {
       markers[i] = new google.maps.Marker({
-        position: {lat: locations[i].location.lat, lng: locations[i].location.lon},
+        position: { lat: locations[i].location.lat, lng: locations[i].location.lon },
         map: map,
       });
-      
+
       balloons[i] = new google.maps.InfoWindow();
-      google.maps.event.addListener(markers[i], 'click', function() {
+      google.maps.event.addListener(markers[i], 'click', function () {
         balloons[i].setContent(generateBalloonContent(locations[i]));
         if (activeBalloon) { activeBalloon.close(); }
         balloons[i].open(map, markers[i]);
@@ -58,7 +58,7 @@ function initMap() {
     }
 
     selfMarker = new google.maps.Marker({
-      position: {lat: locations[0].location.lat, lng: locations[0].location.lon},
+      position: { lat: locations[0].location.lat, lng: locations[0].location.lon },
       map: map,
       icon: {
         path: fontawesome.markers.CIRCLE,
@@ -80,7 +80,7 @@ function updateMarkers() {
     if (locations.length !== markers.length) {
       location.reload();
     }
-    
+
     for (let i = 0; i < locations.length; i++) {
       markers[i].setIcon({
         path: fontawesome.markers.FLAG,
@@ -106,12 +106,12 @@ function init() {
   updateAll(null);
   $('[data-toggle="tooltip"]').tooltip();
   console.log("initialized");
-  setInterval(function(){
+  setInterval(function () {
     if (!transactionInProgress) {
       updateAll(null);
     }
   }, 5000);
-  setInterval(function(){
+  setInterval(function () {
     if (!transactionInProgress) {
       locate();
     }
@@ -128,16 +128,16 @@ function logIn(callback) {
     $.ajax({
       type: "POST",
       url: "api.php?action=create&resource=team",
-      data: {'name': name}
-    }).done(function(callback) { updateAll(callback); });
+      data: { 'name': name }
+    }).done(function (callback) { updateAll(callback); });
     localStorage.setItem("user", name);
   }
 }
 
 function bindNavigationButtons() {
-  $("[data-page]").click(function() {
+  $("[data-page]").click(function () {
     $(".page").addClass("d-none");
-    $("#"+$(this).data("page")).removeClass("d-none");
+    $("#" + $(this).data("page")).removeClass("d-none");
     $("[data-page]").parent().removeClass("active");
     $(this).parent().addClass("active");
     $(this).parent().parent().parent().removeClass("show");
@@ -145,17 +145,17 @@ function bindNavigationButtons() {
 }
 
 function fetchAll(callback) {
-  updateNotifications(function() {
-    updateLocations(function() {
+  updateNotifications(function () {
+    updateLocations(function () {
       updateScoreTable(callback);
     })
   });
 }
 
 function updateAll(callback) {
-  fetchAll(function() {
+  fetchAll(function () {
     locate();
-    if (typeof callback ==='function') {
+    if (typeof callback === 'function') {
       callback();
     }
   });
@@ -166,22 +166,22 @@ function locate() {
 }
 
 function updateLocations(callback) {
-  $.get( "api.php?action=list&resource=locations&rand="+Math.random(), function(
-    data ) {
+  $.get("api.php?action=list&resource=locations&rand=" + Math.random(), function (
+    data) {
     locations = data;
     updateMarkers();
-    if (typeof callback ==='function') {
+    if (typeof callback === 'function') {
       callback();
     }
   });
 }
 
 function updateNotifications(callback) {
-  $.get( "api.php?action=list&resource=notifications&rand="+Math.random(), function(
-    data ) {
+  $.get("api.php?action=list&resource=notifications&rand=" + Math.random(), function (
+    data) {
     notifications = data;
     displayNotifications(notifications);
-    if (typeof callback ==='function') {
+    if (typeof callback === 'function') {
       callback();
     }
   });
@@ -195,13 +195,13 @@ function displayNotifications(notifications) {
 }
 
 function updateScoreTable(callback) {
-  $.get( "api.php?action=list&resource=scores&rand="+Math.random(), function(
-    data ) {
+  $.get("api.php?action=list&resource=scores&rand=" + Math.random(), function (
+    data) {
     $("#score-table").html("");
     for (let i = 0; i < data.length; i++) {
       $("#score-table").append(
         `<tr>
-          <td class="text-right">${i+1}.</td>
+          <td class="text-right">${i + 1}.</td>
           <td class="text-left"><i class="icon-sign-blank" style="color: ${data[i].color}"></i>&nbsp;${data[i].name}</td>
           <td>${data[i].captures}</td>
           <td>${data[i].total_captures}</td>
@@ -214,7 +214,7 @@ function updateScoreTable(callback) {
         $(".color-flag").css("fill", data[i].color);
       }
     }
-    if (typeof callback ==='function') {
+    if (typeof callback === 'function') {
       callback();
     }
   });
@@ -222,7 +222,7 @@ function updateScoreTable(callback) {
 }
 
 function checkIfNearLocation(location) {
-  selfMarker.setPosition({lat: location.coords.latitude, lng: location.coords.longitude});
+  selfMarker.setPosition({ lat: location.coords.latitude, lng: location.coords.longitude });
   for (let i = 0; i < locations.length; i++) {
     let distance = getDistanceFromLatLonInKm(
       location.coords.latitude,
@@ -248,7 +248,7 @@ function capture(locationId) {
   $.ajax({
     type: "POST",
     url: "api.php?action=create&resource=capture",
-    data: {'location': locationId, 'name': localStorage.getItem('user')},
+    data: { 'location': locationId, 'name': localStorage.getItem('user') },
   }).done(updateAll(finishTransaction()));
 }
 
@@ -261,16 +261,16 @@ function visitLocation(locationDetails, newlyVisited) {
   }
 }
 
-function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   let R = 6371; // Radius of the earth in km
-  let dLat = deg2rad(lat2-lat1);  // deg2rad below
-  let dLon = deg2rad(lon2-lon1);
+  let dLat = deg2rad(lat2 - lat1);  // deg2rad below
+  let dLon = deg2rad(lon2 - lon1);
   let a =
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-    Math.sin(dLon/2) * Math.sin(dLon/2)
-  ;
-  let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    Math.sin(dLon / 2) * Math.sin(dLon / 2)
+    ;
+  let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   let d = R * c; // Distance in km
   return d;
 }
@@ -279,13 +279,13 @@ function showAlert(alrt) {
   if (alrt === null) {
     $("#alerts").empty();
   } else {
-    $("#alerts").append("<div class='alert alert-"+alrt.type+"' role='alert'>"
-                        + alrt.text + "</div>")
+    $("#alerts").append("<div class='alert alert-" + alrt.type + "' role='alert'>"
+      + alrt.text + "</div>")
   }
 }
 
 function deg2rad(deg) {
-  return deg * (Math.PI/180)
+  return deg * (Math.PI / 180)
 }
 
 function startTransaction() {
@@ -300,7 +300,7 @@ function generateBalloonContent(location) {
   const name = "<h6>" + location.name + "</h6>"
   const score = "<strong>Waarde: " + location.score + "</strong><br>";
   let list = [];
-  for (let i = location.captures.length - 1; i >= 0 ; i--) {
+  for (let i = location.captures.length - 1; i >= 0; i--) {
     let capture = location.captures[i];
     console.log(capture);
     let team = capture.team;
@@ -318,5 +318,5 @@ function generateBalloonContent(location) {
     heading = "";
   }
 
-  return name + score + heading + "<ul>"+ list + "</ul>";
+  return name + score + heading + "<ul>" + list + "</ul>";
 }
