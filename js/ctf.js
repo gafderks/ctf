@@ -7,6 +7,7 @@ var locations = [];
 var activeBalloon;
 
 const weekday = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'];
+const maxDistance = 0.060; // 60 meter
 
 function initMap() {
   // Gets called from maps js
@@ -219,7 +220,7 @@ function checkIfNearLocation(location) {
       locations[i].location.lat,
       locations[i].location.lon
     );
-    if (distance <= 0.03) { // 30 meter
+    if (distance <= maxDistance) { // 30 meter
       let visited = JSON.parse(localStorage.getItem("visited"));
       if (visited.length === 0 || (visited[visited.length - 1] !== i)) {
         visited[visited.length] = i;
