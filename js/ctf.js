@@ -3,6 +3,7 @@ var transactionInProgress = false;
 var map;
 var selfMarker;
 var markers = [];
+var polygons = [];
 var balloons = [];
 var locations = [];
 var activeBalloon;
@@ -33,6 +34,14 @@ function initMap() {
 
     // Place the markers
     for (let i = 0; i < locations.length; i++) {
+
+      if (locations[i].polygon !== undefined) {
+        polygons[i] = new google.maps.Polygon({
+          paths: locations[i].polygon,
+          map: map,
+          strokeWeight: 1,
+        });
+      }
       markers[i] = new google.maps.Marker({
         position: { lat: locations[i].location.lat, lng: locations[i].location.lon },
         map: map,
@@ -96,6 +105,12 @@ function updateMarkers() {
         text: locations[i].score,
         className: 'markerlabel'
       });
+      if (locations[i].polygon !== undefined) {
+        polygons[i].setOptions({
+          fillColor: locations[i].color,
+          strokeColor: locations[i].color === 'white' ? 'black' : locations[i].color,
+        });
+      }
     }
   }
 }
@@ -168,6 +183,13 @@ function locate() {
 function updateLocations(callback) {
   $.get("api.php?action=list&resource=locations&rand=" + Math.random(), function (
     data) {
+    // parse polygon json
+    data = data.map(loc => {
+      if (loc.polygon !== undefined) {
+        loc.polygon = JSON.parse(loc.polygon);
+      }
+      return loc;
+    });
     locations = data;
     updateMarkers();
     if (typeof callback === 'function') {

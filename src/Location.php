@@ -49,6 +49,12 @@ class Location
     private $lon;
 
     /**
+     * @var string
+     * @Column(type="string", nullable=true)
+     */
+    private $polygon_json;
+
+    /**
      * @var boolean
      * @Column(type="boolean")
      */
@@ -72,6 +78,10 @@ class Location
     
     public function getLon() {
         return utf8_encode($this->lon);
+    }
+
+    public function getPolygon() {
+        return $this->polygon_json;
     }
 
     public function getScore() {
@@ -115,6 +125,7 @@ class Location
                 "lat" => (double) $this->getLat(),
                 "lon" => (double) $this->getLon()
             ],
+            "polygon" => $this->getPolygon(),
             "captures" => $the_captures_json,
             "owner" => $this->getActiveCaptureTeamName(),
             "color" => $this->getColor()
