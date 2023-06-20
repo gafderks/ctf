@@ -1,3 +1,4 @@
+var showRadius = false;
 var transactionInProgress = false;
 var map;
 var selfMarker;
@@ -44,6 +45,15 @@ function initMap() {
         balloons[i].open(map, markers[i]);
         activeBalloon = balloons[i];
       });
+
+      if (showRadius) {
+        new google.maps.Circle({
+          center: markers[i].position,
+          radius: maxDistance * 1000,
+          strokeColor: "#ff0000",
+          map: map,
+        });
+      }
     
     }
 
