@@ -4,7 +4,7 @@ if (location.hash.startsWith("#team=")) {
   localStorage.setItem("user", decodeURI(location.hash.substring("#team=".length)));
 }
 
-var showRadius = true;
+var showRadius = false;
 var transactionInProgress = false;
 var map;
 var selfMarker;
