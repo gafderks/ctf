@@ -1,4 +1,10 @@
-var showRadius = false;
+if (location.hash.startsWith("#team=")) {
+  localStorage.clear();
+  localStorage.setItem("visited", JSON.stringify([]));
+  localStorage.setItem("user", decodeURI(location.hash.substring("#team=".length)));
+}
+
+var showRadius = true;
 var transactionInProgress = false;
 var map;
 var selfMarker;
