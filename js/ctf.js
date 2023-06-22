@@ -1,9 +1,3 @@
-if (location.hash.startsWith("#team=")) {
-  localStorage.clear();
-  localStorage.setItem("visited", JSON.stringify([]));
-  localStorage.setItem("user", decodeURI(location.hash.substring("#team=".length)));
-}
-
 var showRadius = false;
 var transactionInProgress = false;
 var map;
@@ -139,13 +133,21 @@ function init() {
   }, 2000);
 }
 
+function getTeamName() {
+  let name = '';
+  if (location.hash.startsWith("#team=")) {
+    name = decodeURI(location.hash.substring("#team=".length));
+  }
+  while (name.trim() === "" || name === null) {
+    name = prompt("Vul je teamnaam in");
+  }
+  return name;
+}
+
 function logIn(callback) {
   if (localStorage.getItem("user") == null) {
     localStorage.setItem("visited", JSON.stringify([]));
-    let name = "";
-    while (name.trim() === "" || name === null) {
-      name = prompt("Vul je teamnaam in");
-    }
+    const name = getTeamName();
     $.ajax({
       type: "POST",
       url: "api.php?action=create&resource=team",
